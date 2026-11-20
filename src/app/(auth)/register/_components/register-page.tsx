@@ -22,7 +22,7 @@ export default function RegisterPage() {
   const form = useForm<RegisterFormValues>({ resolver: zodResolver(registerFormValidator) });
 
   useEffect(() => {
-    if (!isLoading && user) router.replace(ROUTES.today);
+    if (!isLoading && user) router.replace(ROUTES.homePage);
   }, [isLoading, user, router]);
 
   async function onSubmit(values: RegisterFormValues) {
@@ -34,7 +34,7 @@ export default function RegisterPage() {
         password: values.password,
         displayName: values.displayName || undefined,
       });
-      router.replace(ROUTES.today);
+      router.replace(ROUTES.homePage);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not create account');
     }

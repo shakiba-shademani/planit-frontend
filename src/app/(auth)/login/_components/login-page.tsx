@@ -22,7 +22,7 @@ export default function LoginPage() {
   const form = useForm<LoginFormValues>({ resolver: zodResolver(loginFormValidator) });
 
   useEffect(() => {
-    if (!isLoading && user) router.replace(ROUTES.today);
+    if (!isLoading && user) router.replace(ROUTES.homePage);
   }, [isLoading, user, router]);
 
   async function onSubmit(values: LoginFormValues) {
@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     try {
       await loginMutation.mutateAsync(values);
-      router.replace(ROUTES.today);
+      router.replace(ROUTES.homePage);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not log in');
     }

@@ -1,5 +1,7 @@
-import TodayPage from './_components/today-page';
+import { redirect } from 'next/navigation';
+
+import { ROUTES } from '@/constants/routes';
 
 export default function Today() {
-  return <TodayPage />;
+  redirect(ROUTES.homePage);
 }

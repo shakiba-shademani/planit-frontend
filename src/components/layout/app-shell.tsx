@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 
-import { CalendarDays, PlusCircle, UserRound } from 'lucide-react';
+import { CalendarDays, Home, PlusCircle, UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -10,8 +10,9 @@ import { AuthGuard } from '@/components/auth-guard';
 import { ROUTES } from '@/constants/routes';
 
 const tabs = [
-  { href: ROUTES.today, label: 'Today', icon: CalendarDays },
-  { href: ROUTES.add, label: 'Add', icon: PlusCircle },
+  { href: ROUTES.homePage, label: 'Home', icon: Home },
+  { href: ROUTES.calendar, label: 'Calendar', icon: CalendarDays },
+  { href: ROUTES.add, label: 'Plan', icon: PlusCircle },
   { href: ROUTES.profile, label: 'Profile', icon: UserRound },
 ];
 
@@ -26,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
 
         <nav className='fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-line bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur'>
-          <ul className='grid grid-cols-3'>
+          <ul className='grid grid-cols-4'>
             {tabs.map((tab) => {
               const active = pathname === tab.href;
               const Icon = tab.icon;

@@ -20,7 +20,7 @@ export default function SplashPage() {
 
   useEffect(() => {
     if (!ready || isLoading) return;
-    router.replace(user ? ROUTES.today : ROUTES.login);
+    router.replace(user ? ROUTES.homePage : ROUTES.login);
   }, [ready, isLoading, user, router]);
 
   return (
