@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 
 import { TaskFormSheet } from '@/app/(main)/_components/task-form-sheet';
 import { DateNav } from '@/components/date-nav';
+import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { TaskItem } from '@/components/task-item';
 import { useCreateTask, useDeleteTask, useGetTasks, useUpdateTask } from '@/hooks/apis/tasks';
 import type { Task } from '@/hooks/apis/tasks/types';
@@ -42,28 +43,30 @@ export default function AddPage() {
 
   return (
     <>
-      <div className='flex items-start justify-between gap-3'>
-        <div>
-          <h1 className='text-xl font-semibold'>Plan</h1>
+      <StickyPageHeader>
+        <div className='flex items-start justify-between gap-3'>
+          <div>
+            <h1 className='text-xl font-semibold'>Plan</h1>
 
-          <p className='mt-1 text-sm text-muted'>Pick a day, then add tasks when you need them.</p>
+            <p className='mt-1 text-sm text-muted'>Pick a day, then add tasks when you need them.</p>
+          </div>
+
+          <button
+            type='button'
+            onClick={openCreateSheet}
+            className='inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-3 text-sm font-semibold text-white hover:bg-primary-dark'
+          >
+            <Plus size={16} />
+            New
+          </button>
         </div>
 
-        <button
-          type='button'
-          onClick={openCreateSheet}
-          className='inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-3 text-sm font-semibold text-white hover:bg-primary-dark'
-        >
-          <Plus size={16} />
-          New
-        </button>
-      </div>
+        <div className='mt-4'>
+          <DateNav value={date} onChange={setDate} />
+        </div>
+      </StickyPageHeader>
 
-      <div className='mt-4'>
-        <DateNav value={date} onChange={setDate} />
-      </div>
-
-      <div className='mt-5 flex items-end justify-between'>
+      <div className='flex items-end justify-between'>
         <h2 className='text-base font-semibold'>Tasks</h2>
 
         <p className='text-xs text-muted'>

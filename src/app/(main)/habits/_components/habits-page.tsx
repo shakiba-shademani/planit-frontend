@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Pencil, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 import { HabitFormSheet } from '@/app/(main)/habits/_components/habit-form-sheet';
+import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { ROUTES } from '@/constants/routes';
 import {
   useDeleteHabit,
@@ -47,7 +48,7 @@ export default function HabitsPage() {
 
   return (
     <>
-      <header className='mb-5'>
+      <StickyPageHeader>
         <Link
           href={ROUTES.homePage}
           className='mb-3 inline-flex items-center gap-1 text-sm text-muted'
@@ -75,7 +76,7 @@ export default function HabitsPage() {
             New
           </button>
         </div>
-      </header>
+      </StickyPageHeader>
 
       {habitsQuery.isLoading ? (
         <p className='mt-6 text-center text-sm text-muted'>Loading habits...</p>

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 
 import { TaskFormSheet } from '@/app/(main)/_components/task-form-sheet';
 import { GoalsHabitsOverview } from '@/app/(main)/home/_components/goals-habits-overview';
+import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { TaskItem } from '@/components/task-item';
 import {
   useCreateTask,
@@ -90,73 +91,75 @@ export default function HomePage() {
 
   return (
     <>
-      <header className='mb-5 flex items-center gap-3'>
-        <div className='h-12 w-12 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700'>
-          {user?.avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={user.avatarUrl} alt='' className='h-full w-full object-cover' />
-          ) : (
-            <div className='flex h-full w-full items-center justify-center text-sm font-semibold text-muted'>
-              {user?.displayName?.[0]?.toUpperCase() ?? 'T'}
-            </div>
-          )}
-        </div>
+      <StickyPageHeader>
+        <header className='mb-4 flex items-center gap-3'>
+          <div className='h-12 w-12 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700'>
+            {user?.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.avatarUrl} alt='' className='h-full w-full object-cover' />
+            ) : (
+              <div className='flex h-full w-full items-center justify-center text-sm font-semibold text-muted'>
+                {user?.displayName?.[0]?.toUpperCase() ?? 'T'}
+              </div>
+            )}
+          </div>
 
-        <div className='min-w-0'>
-          <p className='text-sm text-muted'>{greeting()}</p>
+          <div className='min-w-0'>
+            <p className='text-sm text-muted'>{greeting()}</p>
 
-          <h1 className='truncate text-xl font-semibold'>{user?.displayName}</h1>
-        </div>
-      </header>
+            <h1 className='truncate text-xl font-semibold'>{user?.displayName}</h1>
+          </div>
+        </header>
 
-      <div className='grid grid-cols-7 gap-1'>
-        {days.map((day) => {
-          const selected = day === selectedDate;
-          const isToday = day === today;
-          const count = counts[day] ?? 0;
+        <div className='grid grid-cols-7 gap-1'>
+          {days.map((day) => {
+            const selected = day === selectedDate;
+            const isToday = day === today;
+            const count = counts[day] ?? 0;
 
-          return (
-            <button
-              key={day}
-              type='button'
-              onClick={() => setSelectedDate(day)}
-              className={`flex flex-col items-center rounded-2xl px-1 py-2 ${
-                selected
-                  ? 'bg-primary text-white'
-                  : 'bg-card text-foreground hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
-            >
-              <span
-                className={`text-[10px] font-medium uppercase ${
-                  selected ? 'text-white/80' : 'text-muted'
+            return (
+              <button
+                key={day}
+                type='button'
+                onClick={() => setSelectedDate(day)}
+                className={`flex flex-col items-center rounded-2xl px-1 py-2 ${
+                  selected
+                    ? 'bg-primary text-white'
+                    : 'bg-card text-foreground hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                {formatShortWeekday(day)}
-              </span>
+                <span
+                  className={`text-[10px] font-medium uppercase ${
+                    selected ? 'text-white/80' : 'text-muted'
+                  }`}
+                >
+                  {formatShortWeekday(day)}
+                </span>
 
-              <span className='mt-1 text-sm font-semibold'>{formatDayNumber(day)}</span>
+                <span className='mt-1 text-sm font-semibold'>{formatDayNumber(day)}</span>
 
-              <span
-                className={`mt-1 h-1.5 w-1.5 rounded-full ${
-                  count > 0
-                    ? selected
-                      ? 'bg-white'
-                      : 'bg-primary'
-                    : isToday && !selected
-                      ? 'bg-line'
-                      : 'bg-transparent'
-                }`}
-              />
-            </button>
-          );
-        })}
-      </div>
+                <span
+                  className={`mt-1 h-1.5 w-1.5 rounded-full ${
+                    count > 0
+                      ? selected
+                        ? 'bg-white'
+                        : 'bg-primary'
+                      : isToday && !selected
+                        ? 'bg-line'
+                        : 'bg-transparent'
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
 
-      <p className='mt-2 text-center text-xs text-muted'>
-        Week of {startOfWeek(selectedDate)}
-      </p>
+        <p className='mt-2 text-center text-xs text-muted'>
+          Week of {startOfWeek(selectedDate)}
+        </p>
+      </StickyPageHeader>
 
-      <div className='mt-4 grid grid-cols-3 gap-2'>
+      <div className='grid grid-cols-3 gap-2'>
         <div className='rounded-2xl border border-line bg-card px-3 py-3'>
           <p className='text-[11px] text-muted'>Left</p>
 
@@ -222,20 +225,13 @@ export default function HomePage() {
             </div>
           ) : (
             <>
-              <section>
-                <div className='mb-2 flex items-end justify-between'>
-                  <h2 className='text-base font-semibold'>Timeline</h2>
+              {timed.length > 0 ? (
+                <section>
+                  <div className='mb-2 flex items-end justify-between'>
+                    <h2 className='text-base font-semibold'>Timeline</h2>
+                    <p className='text-xs text-muted'>{timed.length} timed</p>
+                  </div>
 
-                  <p className='text-xs text-muted'>
-                    {timed.length === 0 ? 'None' : `${timed.length} timed`}
-                  </p>
-                </div>
-
-                {timed.length === 0 ? (
-                  <p className='rounded-2xl border border-dashed border-line px-4 py-6 text-center text-sm text-muted'>
-                    No timed tasks for this day
-                  </p>
-                ) : (
                   <ul className='space-y-2'>
                     {timed.map((task) => (
                       <TaskItem
@@ -249,23 +245,16 @@ export default function HomePage() {
                       />
                     ))}
                   </ul>
-                )}
-              </section>
+                </section>
+              ) : null}
 
-              <section>
-                <div className='mb-2 flex items-end justify-between'>
-                  <h2 className='text-base font-semibold'>Anytime</h2>
+              {untimed.length > 0 ? (
+                <section>
+                  <div className='mb-2 flex items-end justify-between'>
+                    <h2 className='text-base font-semibold'>Anytime</h2>
+                    <p className='text-xs text-muted'>{untimed.length}</p>
+                  </div>
 
-                  <p className='text-xs text-muted'>
-                    {untimed.length === 0 ? 'None' : `${untimed.length}`}
-                  </p>
-                </div>
-
-                {untimed.length === 0 ? (
-                  <p className='rounded-2xl border border-dashed border-line px-4 py-6 text-center text-sm text-muted'>
-                    No untimed tasks for this day
-                  </p>
-                ) : (
                   <ul className='space-y-2'>
                     {untimed.map((task) => (
                       <TaskItem
@@ -279,8 +268,8 @@ export default function HomePage() {
                       />
                     ))}
                   </ul>
-                )}
-              </section>
+                </section>
+              ) : null}
             </>
           )}
         </div>

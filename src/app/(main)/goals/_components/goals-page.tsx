@@ -6,6 +6,7 @@ import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 import { GoalFormSheet } from '@/app/(main)/goals/_components/goal-form-sheet';
+import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { GOAL_STATUS_STYLES } from '@/constants/goals-habits';
 import { ROUTES } from '@/constants/routes';
 import { useDeleteGoal, useGetGoals } from '@/hooks/apis/goals';
@@ -41,7 +42,7 @@ export default function GoalsPage() {
 
   return (
     <>
-      <header className='mb-5'>
+      <StickyPageHeader>
         <Link
           href={ROUTES.homePage}
           className='mb-3 inline-flex items-center gap-1 text-sm text-muted'
@@ -69,7 +70,7 @@ export default function GoalsPage() {
             New
           </button>
         </div>
-      </header>
+      </StickyPageHeader>
 
       {goalsQuery.isLoading ? (
         <p className='mt-6 text-center text-sm text-muted'>Loading goals...</p>

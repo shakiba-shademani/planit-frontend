@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
 
+import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { ROUTES } from '@/constants/routes';
 import { useLogout } from '@/hooks/apis/auth';
 import {
@@ -102,9 +103,11 @@ export default function ProfilePage() {
 
   return (
     <>
-      <h1 className='text-xl font-semibold'>Profile</h1>
+      <StickyPageHeader>
+        <h1 className='text-xl font-semibold'>Profile</h1>
+      </StickyPageHeader>
 
-      <div className='mt-6 flex flex-col items-center'>
+      <div className='flex flex-col items-center'>
         <label className='relative cursor-pointer'>
           <div className='h-24 w-24 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700'>
             {user?.avatarUrl ? (

@@ -21,8 +21,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <AuthGuard>
-      <div className='mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background'>
-        <main className='flex-1 px-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]'>
+      <div className='mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-background'>
+        <main className='app-scroll min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 pb-[calc(5.75rem+env(safe-area-inset-bottom))]'>
           {children}
         </main>
 

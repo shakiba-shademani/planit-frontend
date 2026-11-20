@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { TaskFormSheet } from '@/app/(main)/_components/task-form-sheet';
+import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { TaskItem } from '@/components/task-item';
 import {
   useCreateTask,
@@ -126,64 +127,66 @@ export default function CalendarPage() {
 
   return (
     <>
-      <header className='mb-4'>
-        <h1 className='text-xl font-semibold'>Calendar</h1>
+      <StickyPageHeader>
+        <header className='mb-3'>
+          <h1 className='text-xl font-semibold'>Calendar</h1>
 
-        <p className='mt-1 text-sm text-muted'>Day, week, and month planning.</p>
-      </header>
+          <p className='mt-1 text-sm text-muted'>Day, week, and month planning.</p>
+        </header>
 
-      <div className='grid grid-cols-3 gap-1 rounded-2xl border border-line bg-card p-1'>
-        {VIEW_OPTIONS.map((option) => {
-          const active = view === option.id;
+        <div className='grid grid-cols-3 gap-1 rounded-2xl border border-line bg-card p-1'>
+          {VIEW_OPTIONS.map((option) => {
+            const active = view === option.id;
 
-          return (
-            <button
-              key={option.id}
-              type='button'
-              onClick={() => setView(option.id)}
-              className={`rounded-xl py-2 text-sm font-medium ${
-                active ? 'bg-primary text-white' : 'text-muted'
-              }`}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className='mt-4 flex items-center justify-between gap-2'>
-        <button
-          type='button'
-          onClick={() => shiftPeriod(-1)}
-          aria-label='Previous period'
-          className='rounded-xl border border-line bg-card p-2 text-muted'
-        >
-          <ChevronLeft size={18} />
-        </button>
-
-        <div className='min-w-0 text-center'>
-          <p className='truncate text-sm font-semibold'>{periodLabel}</p>
-
-          {selectedDate !== today ? (
-            <button
-              type='button'
-              onClick={() => setSelectedDate(today)}
-              className='mt-1 text-xs font-medium text-primary'
-            >
-              Jump to today
-            </button>
-          ) : null}
+            return (
+              <button
+                key={option.id}
+                type='button'
+                onClick={() => setView(option.id)}
+                className={`rounded-xl py-2 text-sm font-medium ${
+                  active ? 'bg-primary text-white' : 'text-muted'
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
         </div>
 
-        <button
-          type='button'
-          onClick={() => shiftPeriod(1)}
-          aria-label='Next period'
-          className='rounded-xl border border-line bg-card p-2 text-muted'
-        >
-          <ChevronRight size={18} />
-        </button>
-      </div>
+        <div className='mt-3 flex items-center justify-between gap-2'>
+          <button
+            type='button'
+            onClick={() => shiftPeriod(-1)}
+            aria-label='Previous period'
+            className='rounded-xl border border-line bg-card p-2 text-muted'
+          >
+            <ChevronLeft size={18} />
+          </button>
+
+          <div className='min-w-0 text-center'>
+            <p className='truncate text-sm font-semibold'>{periodLabel}</p>
+
+            {selectedDate !== today ? (
+              <button
+                type='button'
+                onClick={() => setSelectedDate(today)}
+                className='mt-1 text-xs font-medium text-primary'
+              >
+                Jump to today
+              </button>
+            ) : null}
+          </div>
+
+          <button
+            type='button'
+            onClick={() => shiftPeriod(1)}
+            aria-label='Next period'
+            className='rounded-xl border border-line bg-card p-2 text-muted'
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      </StickyPageHeader>
 
       {tasksQuery.isLoading ? (
         <p className='mt-6 text-center text-sm text-muted'>Loading tasks...</p>
@@ -301,20 +304,13 @@ export default function CalendarPage() {
             </div>
           ) : (
             <>
-              <section>
-                <div className='mb-2 flex items-end justify-between'>
-                  <h2 className='text-base font-semibold'>Timeline</h2>
+              {timed.length > 0 ? (
+                <section>
+                  <div className='mb-2 flex items-end justify-between'>
+                    <h2 className='text-base font-semibold'>Timeline</h2>
+                    <p className='text-xs text-muted'>{timed.length} timed</p>
+                  </div>
 
-                  <p className='text-xs text-muted'>
-                    {timed.length === 0 ? 'None' : `${timed.length} timed`}
-                  </p>
-                </div>
-
-                {timed.length === 0 ? (
-                  <p className='rounded-2xl border border-dashed border-line px-4 py-6 text-center text-sm text-muted'>
-                    No timed tasks
-                  </p>
-                ) : (
                   <ul className='space-y-2'>
                     {timed.map((task) => (
                       <TaskItem
@@ -328,23 +324,16 @@ export default function CalendarPage() {
                       />
                     ))}
                   </ul>
-                )}
-              </section>
+                </section>
+              ) : null}
 
-              <section>
-                <div className='mb-2 flex items-end justify-between'>
-                  <h2 className='text-base font-semibold'>Anytime</h2>
+              {untimed.length > 0 ? (
+                <section>
+                  <div className='mb-2 flex items-end justify-between'>
+                    <h2 className='text-base font-semibold'>Anytime</h2>
+                    <p className='text-xs text-muted'>{untimed.length}</p>
+                  </div>
 
-                  <p className='text-xs text-muted'>
-                    {untimed.length === 0 ? 'None' : `${untimed.length}`}
-                  </p>
-                </div>
-
-                {untimed.length === 0 ? (
-                  <p className='rounded-2xl border border-dashed border-line px-4 py-6 text-center text-sm text-muted'>
-                    No untimed tasks
-                  </p>
-                ) : (
                   <ul className='space-y-2'>
                     {untimed.map((task) => (
                       <TaskItem
@@ -358,8 +347,8 @@ export default function CalendarPage() {
                       />
                     ))}
                   </ul>
-                )}
-              </section>
+                </section>
+              ) : null}
             </>
           )}
         </div>
