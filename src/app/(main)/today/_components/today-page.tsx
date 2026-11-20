@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 
+import { TaskFormSheet } from '@/app/(main)/_components/task-form-sheet';
 import { DateNav } from '@/components/date-nav';
 import { TaskItem } from '@/components/task-item';
-import { useDeleteTask, useGetTasks, useUpdateTask } from '@/hooks/apis/tasks';
+import { useCreateTask, useDeleteTask, useGetTasks, useUpdateTask } from '@/hooks/apis/tasks';
 import type { Task } from '@/hooks/apis/tasks/types';
 import { useGetCurrentUser } from '@/hooks/apis/users';
 import { greeting, todayISO } from '@/utils/date';
@@ -12,12 +13,31 @@ import { greeting, todayISO } from '@/utils/date';
 export default function TodayPage() {
   const { data: user } = useGetCurrentUser();
   const [date, setDate] = useState(todayISO);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetKey, setSheetKey] = useState(0);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const tasksQuery = useGetTasks(date);
+  const createMutation = useCreateTask(date);
   const toggleMutation = useUpdateTask(date);
   const deleteMutation = useDeleteTask(date);
 
   const tasks = tasksQuery.data ?? [];
   const remaining = tasks.filter((task) => !task.done).length;
+  const timedCount = tasks.filter((task) => task.startTime).length;
+  const highPriorityCount = tasks.filter(
+    (task) => !task.done && task.priority === 'HIGH'
+  ).length;
+
+  function openEditSheet(task: Task) {
+    setEditingTask(task);
+    setSheetKey((value) => value + 1);
+    setSheetOpen(true);
+  }
+
+  function closeSheet() {
+    setSheetOpen(false);
+    setEditingTask(null);
+  }
 
   return (
     <>
@@ -41,6 +61,26 @@ export default function TodayPage() {
       </header>
 
       <DateNav value={date} onChange={setDate} />
+
+      <div className='mt-4 grid grid-cols-3 gap-2'>
+        <div className='rounded-2xl border border-line bg-card px-3 py-3'>
+          <p className='text-[11px] text-muted'>Left</p>
+
+          <p className='mt-1 text-lg font-semibold'>{remaining}</p>
+        </div>
+
+        <div className='rounded-2xl border border-line bg-card px-3 py-3'>
+          <p className='text-[11px] text-muted'>Timed</p>
+
+          <p className='mt-1 text-lg font-semibold'>{timedCount}</p>
+        </div>
+
+        <div className='rounded-2xl border border-line bg-card px-3 py-3'>
+          <p className='text-[11px] text-muted'>High</p>
+
+          <p className='mt-1 text-lg font-semibold'>{highPriorityCount}</p>
+        </div>
+      </div>
 
       <div className='mt-5 flex items-end justify-between'>
         <h2 className='text-base font-semibold'>Tasks</h2>
@@ -72,11 +112,29 @@ export default function TodayPage() {
                 toggleMutation.mutate({ id: item.id, payload: { done: !item.done } })
               }
               onDelete={(item: Task) => deleteMutation.mutate(item.id)}
-              busy={toggleMutation.isPending || deleteMutation.isPending}
+              onEdit={openEditSheet}
+              onAddSubtask={async (parent, title) => {
+                await createMutation.mutateAsync({
+                  title,
+                  date,
+                  parentId: parent.id,
+                });
+              }}
+              busy={
+                toggleMutation.isPending || deleteMutation.isPending || createMutation.isPending
+              }
             />
           ))}
         </ul>
       )}
+
+      <TaskFormSheet
+        key={sheetKey}
+        open={sheetOpen}
+        date={date}
+        task={editingTask}
+        onClose={closeSheet}
+      />
     </>
   );
 }
