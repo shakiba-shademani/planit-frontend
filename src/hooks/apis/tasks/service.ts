@@ -9,6 +9,13 @@ export async function getTasks(date: string) {
   return data;
 }
 
+export async function getTasksByRange(from: string, to: string) {
+  const { data } = await axiosInstance.get<Task[]>(ENDPOINT, {
+    params: { from, to },
+  });
+  return data;
+}
+
 export async function createTask(payload: CreateTaskRequest) {
   const { data } = await axiosInstance.post<Task>(ENDPOINT, payload);
   return data;
