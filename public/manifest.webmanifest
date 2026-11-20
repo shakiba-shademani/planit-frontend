@@ -1,7 +1,7 @@
 {
-  "name": "To Do",
-  "short_name": "To Do",
-  "description": "Your daily tasks, in one simple app.",
+  "name": "Plan It",
+  "short_name": "Plan It",
+  "description": "Your personal planner for tasks, goals, and habits.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

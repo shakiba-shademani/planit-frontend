@@ -29,7 +29,7 @@ export default function SplashPage() {
         <Logo size={96} withWordmark />
       </div>
 
-      <p className='mt-3 text-sm text-muted'>Your day, checked off.</p>
+      <p className='mt-3 text-sm text-muted'>Plan your day, your way.</p>
     </div>
   );
 }

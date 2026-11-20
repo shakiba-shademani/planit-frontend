@@ -42,7 +42,7 @@ export default function LoginPage() {
 
       <h1 className='mt-8 text-xl font-semibold'>Welcome back</h1>
 
-      <p className='mt-1 text-sm text-muted'>Log in to see today&apos;s tasks.</p>
+      <p className='mt-1 text-sm text-muted'>Log in to plan your day.</p>
 
       <form className='mt-6 space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
         <div>

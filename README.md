@@ -1,6 +1,6 @@
-# To Do app
+# Plan It
 
-Next.js PWA frontend for daily tasks — login/register, today’s list, add task, and profile (avatar).  
+Next.js PWA frontend for a personal planner — home, calendar, goals, habits, tasks, and profile.  
 Talks to the NestJS API via `NEXT_PUBLIC_API_URL`.  
 **Hosted on AWS (EC2 + RDS).**
 
@@ -83,4 +83,4 @@ npm run dev
 App: http://localhost:3000
 
 Set `NEXT_PUBLIC_API_URL` to the API base (local default `http://localhost:3001`).  
-The NestJS API should already be running — see the [todo-backend](../backend) repo (or your backend remote) for Docker/Postgres and `npm run start:dev`.
+The NestJS API should already be running — see the [plan-it-backend](../backend) repo (or your backend remote) for Docker/Postgres and `npm run start:dev`.

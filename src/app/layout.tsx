@@ -18,14 +18,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'To Do',
-  description: 'Your daily tasks, in one simple app.',
-  applicationName: 'To Do',
+  title: 'Plan It',
+  description: 'Your personal planner for tasks, goals, and habits.',
+  applicationName: 'Plan It',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'To Do',
+    title: 'Plan It',
   },
   icons: {
     icon: [
