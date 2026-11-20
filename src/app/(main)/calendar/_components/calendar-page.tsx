@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { TaskFormSheet } from '@/app/(main)/_components/task-form-sheet';
+import { WeeklyReview } from '@/app/(main)/calendar/_components/weekly-review';
 import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { TaskItem } from '@/components/task-item';
 import {
@@ -69,11 +70,14 @@ export default function CalendarPage() {
     return eachDay(from, to);
   }, [selectedDate]);
 
+  const weekStart = startOfWeek(selectedDate);
+  const weekEnd = endOfWeek(selectedDate);
+
   const periodLabel =
     view === 'month'
       ? formatMonthYear(selectedDate)
       : view === 'week'
-        ? `${formatLongDate(startOfWeek(selectedDate))} – ${formatDayNumber(endOfWeek(selectedDate))}`
+        ? `${formatLongDate(weekStart)} – ${formatDayNumber(weekEnd)}`
         : formatLongDate(selectedDate);
 
   const busy =
@@ -243,56 +247,72 @@ export default function CalendarPage() {
           </div>
         </div>
       ) : view === 'week' ? (
-        <div className='mt-4 space-y-3'>
-          {week.map((day) => {
-            const dayList = tasksOnDate(tasks, day);
-            const isToday = day === today;
+        <div className='mt-4 space-y-6'>
+          <WeeklyReview
+            tasks={tasks}
+            today={today}
+            weekStart={weekStart}
+            weekEnd={weekEnd}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+            onEdit={openEditSheet}
+            onAddSubtask={handleAddSubtask}
+            busy={busy}
+          />
 
-            return (
-              <section key={day} className='rounded-2xl border border-line bg-card p-3'>
-                <button
-                  type='button'
-                  onClick={() => selectDay(day)}
-                  className='mb-2 flex w-full items-center justify-between text-left'
-                >
-                  <div>
-                    <p className='text-sm font-semibold'>{formatLongDate(day)}</p>
+          <div className='space-y-3'>
+            <h2 className='text-base font-semibold'>By day</h2>
 
-                    {isToday ? <p className='text-xs text-primary'>Today</p> : null}
-                  </div>
+            {week.map((day) => {
+              const dayList = tasksOnDate(tasks, day);
+              const isToday = day === today;
 
-                  <p className='text-xs text-muted'>
-                    {dayList.length === 0 ? 'Empty' : `${dayList.length}`}
-                  </p>
-                </button>
+              return (
+                <section key={day} className='rounded-2xl border border-line bg-card p-3'>
+                  <button
+                    type='button'
+                    onClick={() => selectDay(day)}
+                    className='mb-2 flex w-full items-center justify-between text-left'
+                  >
+                    <div>
+                      <p className='text-sm font-semibold'>{formatLongDate(day)}</p>
 
-                {dayList.length === 0 ? (
-                  <p className='text-sm text-muted'>No tasks</p>
-                ) : (
-                  <ul className='space-y-2'>
-                    {dayList.slice(0, 4).map((task) => (
-                      <li key={task.id} className='flex items-center gap-2 text-sm'>
-                        <span
-                          className={`h-2 w-2 shrink-0 rounded-full ${
-                            task.done ? 'bg-muted' : 'bg-primary'
-                          }`}
-                        />
+                      {isToday ? <p className='text-xs text-primary'>Today</p> : null}
+                    </div>
 
-                        <span className={task.done ? 'text-muted line-through' : ''}>
-                          {task.startTime ? `${task.startTime} · ` : ''}
-                          {task.title}
-                        </span>
-                      </li>
-                    ))}
+                    <p className='text-xs text-muted'>
+                      {dayList.length === 0 ? 'Empty' : `${dayList.length}`}
+                    </p>
+                  </button>
 
-                    {dayList.length > 4 ? (
-                      <li className='text-xs text-muted'>+{dayList.length - 4} more</li>
-                    ) : null}
-                  </ul>
-                )}
-              </section>
-            );
-          })}
+                  {dayList.length === 0 ? (
+                    <p className='text-sm text-muted'>No tasks</p>
+                  ) : (
+                    <ul className='space-y-2'>
+                      {dayList.slice(0, 4).map((task) => (
+                        <li key={task.id} className='flex items-center gap-2 text-sm'>
+                          <span
+                            className={`h-2 w-2 shrink-0 rounded-full ${
+                              task.done ? 'bg-muted' : 'bg-primary'
+                            }`}
+                          />
+
+                          <span className={task.done ? 'text-muted line-through' : ''}>
+                            {task.startTime ? `${task.startTime} · ` : ''}
+                            {task.title}
+                          </span>
+                        </li>
+                      ))}
+
+                      {dayList.length > 4 ? (
+                        <li className='text-xs text-muted'>+{dayList.length - 4} more</li>
+                      ) : null}
+                    </ul>
+                  )}
+                </section>
+              );
+            })}
+          </div>
         </div>
       ) : (
         <div className='mt-5 space-y-6'>
