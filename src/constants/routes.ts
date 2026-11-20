@@ -7,4 +7,6 @@ export const ROUTES = {
   calendar: '/calendar',
   add: '/add',
   profile: '/profile',
+  goals: '/goals',
+  habits: '/habits',
 } as const;
