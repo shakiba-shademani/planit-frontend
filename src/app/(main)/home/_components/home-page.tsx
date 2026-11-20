@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { TaskFormSheet } from '@/app/(main)/_components/task-form-sheet';
+import { GoalsHabitsOverview } from '@/app/(main)/home/_components/goals-habits-overview';
 import { TaskItem } from '@/components/task-item';
 import {
   useCreateTask,
@@ -174,6 +175,8 @@ export default function HomePage() {
           <p className='mt-1 text-lg font-semibold'>{highPriorityCount}</p>
         </div>
       </div>
+
+      <GoalsHabitsOverview />
 
       {tasksQuery.isLoading ? (
         <p className='mt-6 text-center text-sm text-muted'>Loading tasks...</p>
