@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
 
+import { NotificationSettings } from '@/app/(main)/profile/_components/notification-settings';
 import { StickyPageHeader } from '@/components/layout/sticky-page-header';
 import { ROUTES } from '@/constants/routes';
 import { useLogout } from '@/hooks/apis/auth';
@@ -150,6 +151,8 @@ export default function ProfilePage() {
           {dark ? <Moon size={18} /> : <Sun size={18} />}
         </button>
       </section>
+
+      <NotificationSettings />
 
       <form
         className='mt-4 space-y-3 rounded-2xl border border-line bg-card p-4'
