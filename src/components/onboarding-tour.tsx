@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState, useSyncExternalStore, type CSSProperties } from 'react';
 
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -80,6 +80,7 @@ const STEPS: TourStep[] = [
 ];
 
 const PAD = 10;
+const TOUR_CHANGE_EVENT = 'planit:onboarding-tour';
 
 function readTourDone() {
   try {
@@ -92,9 +93,23 @@ function readTourDone() {
 function markTourDone() {
   try {
     window.localStorage.setItem(ONBOARDING_TOUR_DONE_KEY, '1');
+    window.dispatchEvent(new Event(TOUR_CHANGE_EVENT));
   } catch {
     // Ignore storage failures; tour just will not persist.
   }
+}
+
+function subscribeTourDone(onStoreChange: () => void) {
+  window.addEventListener('storage', onStoreChange);
+  window.addEventListener(TOUR_CHANGE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener('storage', onStoreChange);
+    window.removeEventListener(TOUR_CHANGE_EVENT, onStoreChange);
+  };
+}
+
+function useTourPending() {
+  return useSyncExternalStore(subscribeTourDone, () => !readTourDone(), () => false);
 }
 
 function measureTarget(targetId: string): TargetRect | null {
@@ -115,18 +130,14 @@ function measureTarget(targetId: string): TargetRect | null {
 export function OnboardingTour() {
   const router = useRouter();
   const pathname = usePathname();
-  const [active, setActive] = useState(false);
+  const pending = useTourPending();
   const [stepIndex, setStepIndex] = useState(0);
-  const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
+  const [measuredRect, setMeasuredRect] = useState<TargetRect | null>(null);
 
   const step = STEPS[stepIndex];
+  const active = pending && Boolean(step);
   const isLast = stepIndex === STEPS.length - 1;
-
-  useEffect(() => {
-    if (!readTourDone()) {
-      setActive(true);
-    }
-  }, []);
+  const targetRect = step?.target ? measuredRect : null;
 
   useEffect(() => {
     if (!active || !step) return;
@@ -136,19 +147,17 @@ export function OnboardingTour() {
       return;
     }
 
-    if (!step.target) {
-      setTargetRect(null);
-      return;
-    }
+    if (!step.target) return;
 
     let cancelled = false;
     let attempts = 0;
+    const targetId = step.target;
 
     const sync = () => {
       if (cancelled) return;
-      const next = measureTarget(step.target!);
+      const next = measureTarget(targetId);
       if (next) {
-        setTargetRect(next);
+        setMeasuredRect(next);
         return;
       }
 
@@ -156,16 +165,14 @@ export function OnboardingTour() {
       if (attempts < 20) {
         window.setTimeout(sync, 50);
       } else {
-        setTargetRect(null);
+        setMeasuredRect(null);
       }
     };
 
-    sync();
+    const start = window.setTimeout(sync, 0);
 
     const onResize = () => {
-      if (step.target) {
-        setTargetRect(measureTarget(step.target));
-      }
+      setMeasuredRect(measureTarget(targetId));
     };
 
     window.addEventListener('resize', onResize);
@@ -173,6 +180,7 @@ export function OnboardingTour() {
 
     return () => {
       cancelled = true;
+      window.clearTimeout(start);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onResize, true);
     };
@@ -180,7 +188,6 @@ export function OnboardingTour() {
 
   function finish() {
     markTourDone();
-    setActive(false);
     if (pathname !== ROUTES.homePage) {
       router.push(ROUTES.homePage);
     }
@@ -203,8 +210,8 @@ export function OnboardingTour() {
     <div className='fixed inset-0 z-50' role='dialog' aria-modal='true' aria-labelledby='tour-title'>
       {targetRect ? (
         <>
-          {/* Four scrim panels leave a clear hole over the highlighted UI */}
           <div className={scrim} style={{ top: 0, left: 0, right: 0, height: targetRect.top }} />
+
           <div
             className={scrim}
             style={{
@@ -214,6 +221,7 @@ export function OnboardingTour() {
               bottom: 0,
             }}
           />
+
           <div
             className={scrim}
             style={{
@@ -223,6 +231,7 @@ export function OnboardingTour() {
               height: targetRect.height,
             }}
           />
+
           <div
             className={scrim}
             style={{
@@ -233,7 +242,6 @@ export function OnboardingTour() {
             }}
           />
 
-          {/* Block clicks on the highlighted area during the tour */}
           <div
             className='absolute rounded-2xl'
             style={{

@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import { ChevronDown, Clock } from 'lucide-react';
+import { createPortal } from 'react-dom';
+
+import { useIsClient } from '@/hooks/use-is-client';
 
 type AppTimeSelectProps = {
   value: string;
@@ -48,35 +50,12 @@ export function AppTimeSelect({
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const mounted = useIsClient();
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState<MenuPosition | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const parsed = parseTime(value);
-  const [hour, setHour] = useState(parsed.hour);
-  const [minute, setMinute] = useState(parsed.minute);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const next = parseTime(value || '09:00');
-    setHour(next.hour);
-    setMinute(next.minute);
-
-    const timer = window.setTimeout(() => {
-      document
-        .getElementById(`${listId}-hour-${next.hour}`)
-        ?.scrollIntoView({ block: 'center' });
-      document
-        .getElementById(`${listId}-minute-${next.minute}`)
-        ?.scrollIntoView({ block: 'center' });
-    }, 30);
-
-    return () => window.clearTimeout(timer);
-  }, [open, value, listId]);
+  const initial = parseTime(value || '09:00');
+  const [hour, setHour] = useState(initial.hour);
+  const [minute, setMinute] = useState(initial.minute);
 
   useEffect(() => {
     if (!open) return;
@@ -101,9 +80,14 @@ export function AppTimeSelect({
       });
     }
 
-    updatePosition();
+    const frame = window.requestAnimationFrame(updatePosition);
 
-    function onPointerDown(event: MouseEvent | TouchEvent) {
+    const scrollTimer = window.setTimeout(() => {
+      document.getElementById(`${listId}-hour-${hour}`)?.scrollIntoView({ block: 'center' });
+      document.getElementById(`${listId}-minute-${minute}`)?.scrollIntoView({ block: 'center' });
+    }, 30);
+
+    function onPointerDown(event: PointerEvent) {
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (rootRef.current?.contains(target)) return;
@@ -135,12 +119,14 @@ export function AppTimeSelect({
     document.addEventListener('keydown', onKeyDown);
 
     return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(scrollTimer);
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', onScroll, true);
       document.removeEventListener('pointerdown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [open, listId, onBlur]);
+  }, [open, listId, onBlur, hour, minute]);
 
   function applyTime(nextHour: string, nextMinute: string) {
     onChange(formatTime(nextHour, nextMinute));
@@ -160,6 +146,14 @@ export function AppTimeSelect({
     buttonRef.current?.focus();
   }
 
+  function openPicker() {
+    if (disabled) return;
+    const next = parseTime(value || '09:00');
+    setHour(next.hour);
+    setMinute(next.minute);
+    setOpen(true);
+  }
+
   return (
     <div ref={rootRef} className='relative w-full min-w-0'>
       {name ? <input type='hidden' name={name} value={value} readOnly /> : null}
@@ -172,18 +166,17 @@ export function AppTimeSelect({
         aria-haspopup='dialog'
         aria-expanded={open}
         aria-controls={listId}
-        onClick={() => {
-          if (disabled) return;
-          setOpen((current) => !current);
-        }}
+        onClick={openPicker}
         className='flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-xl border border-line bg-background px-3 text-left text-base outline-none ring-primary focus:ring-2 disabled:opacity-50'
       >
         <span className='flex min-w-0 items-center gap-2'>
           <Clock size={16} className='shrink-0 text-muted' />
+
           <span className={`truncate ${value ? 'text-foreground' : 'text-muted'}`}>
             {value || placeholder}
           </span>
         </span>
+
         <ChevronDown
           size={16}
           className={`shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''}`}
@@ -213,9 +206,11 @@ export function AppTimeSelect({
                 >
                   Clear
                 </button>
+
                 <p className='text-sm font-semibold tabular-nums text-foreground'>
                   {formatTime(hour, minute)}
                 </p>
+
                 <button
                   type='button'
                   onClick={done}
@@ -234,9 +229,11 @@ export function AppTimeSelect({
                   <p className='shrink-0 px-2 py-1 text-center text-[11px] font-medium uppercase tracking-wide text-muted'>
                     Hour
                   </p>
+
                   <div className='min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 pb-1 [-webkit-overflow-scrolling:touch]'>
                     {HOURS.map((item) => {
                       const active = item === hour;
+
                       return (
                         <button
                           key={item}
@@ -263,9 +260,11 @@ export function AppTimeSelect({
                   <p className='shrink-0 px-2 py-1 text-center text-[11px] font-medium uppercase tracking-wide text-muted'>
                     Min
                   </p>
+
                   <div className='min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 pb-1 [-webkit-overflow-scrolling:touch]'>
                     {MINUTES.map((item) => {
                       const active = item === minute;
+
                       return (
                         <button
                           key={item}

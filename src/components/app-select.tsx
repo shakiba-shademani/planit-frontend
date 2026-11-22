@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 
 import { Check, ChevronDown } from 'lucide-react';
+import { createPortal } from 'react-dom';
+
+import { useIsClient } from '@/hooks/use-is-client';
 
 export type AppSelectOption = {
   value: string;
@@ -42,15 +44,11 @@ export function AppSelect({
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const mounted = useIsClient();
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState<MenuPosition | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   const selected = options.find((option) => option.value === value);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -75,9 +73,9 @@ export function AppSelect({
       });
     }
 
-    updatePosition();
+    const frame = window.requestAnimationFrame(updatePosition);
 
-    function onPointerDown(event: MouseEvent | TouchEvent) {
+    function onPointerDown(event: PointerEvent) {
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (rootRef.current?.contains(target)) return;
@@ -109,6 +107,7 @@ export function AppSelect({
     document.addEventListener('keydown', onKeyDown);
 
     return () => {
+      window.cancelAnimationFrame(frame);
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', onScroll, true);
       document.removeEventListener('pointerdown', onPointerDown);
@@ -144,6 +143,7 @@ export function AppSelect({
         <span className={`truncate ${selected ? 'text-foreground' : 'text-muted'}`}>
           {selected?.label ?? placeholder}
         </span>
+
         <ChevronDown
           size={16}
           className={`shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''}`}
@@ -182,6 +182,7 @@ export function AppSelect({
                       }`}
                     >
                       <span className='truncate'>{option.label}</span>
+
                       {active ? <Check size={16} className='shrink-0' /> : null}
                     </button>
                   </li>

@@ -41,7 +41,8 @@ function useInvalidateAllTasks() {
 }
 
 /** `date` kept for call-site compatibility with Plan; invalidates all task queries. */
-export function useCreateTask(_date: string) {
+export function useCreateTask(date: string) {
+  void date;
   const invalidateAllTasks = useInvalidateAllTasks();
 
   return useMutation({
@@ -51,7 +52,8 @@ export function useCreateTask(_date: string) {
 }
 
 /** `date` kept for call-site compatibility with Plan; invalidates all task queries. */
-export function useUpdateTask(_date: string) {
+export function useUpdateTask(date: string) {
+  void date;
   const invalidateAllTasks = useInvalidateAllTasks();
 
   return useMutation({
@@ -62,7 +64,8 @@ export function useUpdateTask(_date: string) {
 }
 
 /** `date` kept for call-site compatibility with Plan; invalidates all task queries. */
-export function useDeleteTask(_date: string) {
+export function useDeleteTask(date: string) {
+  void date;
   const invalidateAllTasks = useInvalidateAllTasks();
 
   return useMutation({
