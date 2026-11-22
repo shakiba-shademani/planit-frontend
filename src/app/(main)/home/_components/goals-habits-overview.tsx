@@ -22,7 +22,7 @@ export function GoalsHabitsOverview() {
   const habitsDone = activeHabits.filter((habit) => habit.completedToday).length;
 
   return (
-    <section className='mt-5 space-y-3'>
+    <section className='mt-5 space-y-3' data-tour='tour-goals-habits'>
       <div className='grid grid-cols-2 gap-2'>
         <Link
           href={ROUTES.goals}

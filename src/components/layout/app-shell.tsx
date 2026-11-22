@@ -7,13 +7,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { AuthGuard } from '@/components/auth-guard';
+import { OnboardingTour } from '@/components/onboarding-tour';
 import { ROUTES } from '@/constants/routes';
 
 const tabs = [
-  { href: ROUTES.homePage, label: 'Home', icon: Home },
-  { href: ROUTES.calendar, label: 'Calendar', icon: CalendarDays },
-  { href: ROUTES.add, label: 'Plan', icon: PlusCircle },
-  { href: ROUTES.profile, label: 'Profile', icon: UserRound },
+  { href: ROUTES.homePage, label: 'Home', icon: Home, tourId: 'tour-nav-home' },
+  { href: ROUTES.calendar, label: 'Calendar', icon: CalendarDays, tourId: 'tour-nav-calendar' },
+  { href: ROUTES.add, label: 'Plan', icon: PlusCircle, tourId: 'tour-nav-plan' },
+  { href: ROUTES.profile, label: 'Profile', icon: UserRound, tourId: 'tour-nav-profile' },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -36,6 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <li key={tab.href}>
                   <Link
                     href={tab.href}
+                    data-tour={tab.tourId}
                     className={`flex flex-col items-center gap-1 py-3 text-xs font-medium ${
                       active ? 'text-primary' : 'text-muted'
                     }`}
@@ -49,6 +51,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </ul>
         </nav>
+
+        <OnboardingTour />
       </div>
     </AuthGuard>
   );

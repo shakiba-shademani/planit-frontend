@@ -111,7 +111,7 @@ export default function HomePage() {
           </div>
         </header>
 
-        <div className='grid grid-cols-7 gap-1'>
+        <div className='grid grid-cols-7 gap-1' data-tour='tour-week-strip'>
           {days.map((day) => {
             const selected = day === selectedDate;
             const isToday = day === today;
@@ -159,7 +159,7 @@ export default function HomePage() {
         </p>
       </StickyPageHeader>
 
-      <div className='grid grid-cols-3 gap-2'>
+      <div className='grid grid-cols-3 gap-2' data-tour='tour-today-stats'>
         <div className='rounded-2xl border border-line bg-card px-3 py-3'>
           <p className='text-[11px] text-muted'>Left</p>
 
