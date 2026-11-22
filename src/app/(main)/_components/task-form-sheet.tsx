@@ -4,12 +4,14 @@ import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown } from 'lucide-react';
-import { useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import {
   taskFormValidator,
   type TaskFormValues,
 } from '@/app/(main)/_validators/task-form-validator';
+import { AppSelect } from '@/components/app-select';
+import { AppTimeSelect } from '@/components/app-time-select';
 import { BottomSheet } from '@/components/bottom-sheet';
 import { RECURRENCE_OPTIONS, TASK_PRIORITIES } from '@/constants/planning';
 import { useCreateProject, useGetProjects } from '@/hooks/apis/projects';
@@ -19,10 +21,7 @@ import type { Task } from '@/hooks/apis/tasks/types';
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '@/utils/reminder';
 
 const fieldClass =
-  'h-11 w-full rounded-xl border border-line bg-background px-3 text-sm outline-none ring-primary focus:ring-2';
-
-const selectClass =
-  'h-11 w-full rounded-xl border border-line bg-background pl-3 pr-14 text-sm outline-none ring-primary focus:ring-2';
+  'h-11 w-full min-w-0 rounded-xl border border-line bg-background px-3 text-base outline-none ring-primary focus:ring-2';
 
 function getDefaultValues(task?: Task | null): TaskFormValues {
   if (!task) {
@@ -187,21 +186,37 @@ export function TaskFormSheet({ open, date, task = null, onClose }: TaskFormShee
         ) : null}
 
         <div className='grid grid-cols-2 gap-3'>
-          <label className='space-y-1 text-xs font-medium text-muted'>
-            Start
-            <input type='time' className={fieldClass} {...form.register('startTime')} />
-          </label>
+          <div className='min-w-0 space-y-1 text-xs font-medium text-muted'>
+            <span>Start</span>
+            <Controller
+              control={form.control}
+              name='startTime'
+              render={({ field }) => (
+                <AppTimeSelect
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  placeholder='No time'
+                />
+              )}
+            />
+          </div>
 
-          <label className='space-y-1 text-xs font-medium text-muted'>
-            Priority
-            <select className={selectClass} {...form.register('priority')}>
-              {TASK_PRIORITIES.map((priority) => (
-                <option key={priority.value} value={priority.value}>
-                  {priority.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className='min-w-0 space-y-1 text-xs font-medium text-muted'>
+            <span>Priority</span>
+            <Controller
+              control={form.control}
+              name='priority'
+              render={({ field }) => (
+                <AppSelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  options={TASK_PRIORITIES}
+                />
+              )}
+            />
+          </div>
         </div>
 
         <button
@@ -230,27 +245,48 @@ export function TaskFormSheet({ open, date, task = null, onClose }: TaskFormShee
                 {...form.register('notes')}
               />
 
-              <label className='block space-y-1 text-xs font-medium text-muted'>
-                End time
-                <input type='time' className={fieldClass} {...form.register('endTime')} />
-              </label>
+              <div className='block space-y-1 text-xs font-medium text-muted'>
+                <span>End time</span>
+                <Controller
+                  control={form.control}
+                  name='endTime'
+                  render={({ field }) => (
+                    <AppTimeSelect
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      placeholder='No time'
+                    />
+                  )}
+                />
+              </div>
 
               {form.formState.errors.endTime ? (
                 <p className='text-xs text-red-500'>{form.formState.errors.endTime.message}</p>
               ) : null}
 
-              <label className='block space-y-1 text-xs font-medium text-muted'>
-                Project
-                <select className={selectClass} {...form.register('projectId')}>
-                  <option value=''>No project</option>
-
-                  {projects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className='block space-y-1 text-xs font-medium text-muted'>
+                <span>Project</span>
+                <Controller
+                  control={form.control}
+                  name='projectId'
+                  render={({ field }) => (
+                    <AppSelect
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      placeholder='No project'
+                      options={[
+                        { value: '', label: 'No project' },
+                        ...projects.map((project) => ({
+                          value: project.id,
+                          label: project.name,
+                        })),
+                      ]}
+                    />
+                  )}
+                />
+              </div>
 
               <div className='flex gap-2'>
                 <input
@@ -326,16 +362,21 @@ export function TaskFormSheet({ open, date, task = null, onClose }: TaskFormShee
                 />
               </label>
 
-              <label className='block space-y-1 text-xs font-medium text-muted'>
-                Repeat
-                <select className={selectClass} {...form.register('recurrence')}>
-                  {RECURRENCE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className='block space-y-1 text-xs font-medium text-muted'>
+                <span>Repeat</span>
+                <Controller
+                  control={form.control}
+                  name='recurrence'
+                  render={({ field }) => (
+                    <AppSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      options={RECURRENCE_OPTIONS}
+                    />
+                  )}
+                />
+              </div>
             </div>
           </div>
         </div>

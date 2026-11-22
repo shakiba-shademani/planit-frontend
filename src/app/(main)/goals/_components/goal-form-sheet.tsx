@@ -1,22 +1,20 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import {
   goalFormValidator,
   type GoalFormValues,
 } from '@/app/(main)/goals/_validators/goal-form-validator';
+import { AppSelect } from '@/components/app-select';
 import { BottomSheet } from '@/components/bottom-sheet';
 import { GOAL_STATUSES } from '@/constants/goals-habits';
 import { useCreateGoal, useUpdateGoal } from '@/hooks/apis/goals';
 import type { Goal } from '@/hooks/apis/goals/types';
 
 const fieldClass =
-  'h-11 w-full rounded-xl border border-line bg-background px-3 text-sm outline-none ring-primary focus:ring-2';
-
-const selectClass =
-  'h-11 w-full rounded-xl border border-line bg-background pl-3 pr-14 text-sm outline-none ring-primary focus:ring-2';
+  'h-11 w-full min-w-0 rounded-xl border border-line bg-background px-3 text-base outline-none ring-primary focus:ring-2';
 
 function getDefaultValues(goal?: Goal | null): GoalFormValues {
   if (!goal) {
@@ -98,21 +96,20 @@ export function GoalFormSheet({ open, goal = null, onClose }: GoalFormSheetProps
         </div>
 
         <div>
-          <label htmlFor='goal-status' className='mb-1 block text-sm font-medium'>
-            Status
-          </label>
-          <select
-            id='goal-status'
-            className={selectClass}
-            {...form.register('status')}
-            disabled={busy}
-          >
-            {GOAL_STATUSES.map((status) => (
-              <option key={status.value} value={status.value}>
-                {status.label}
-              </option>
-            ))}
-          </select>
+          <span className='mb-1 block text-sm font-medium'>Status</span>
+          <Controller
+            control={form.control}
+            name='status'
+            render={({ field }) => (
+              <AppSelect
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                options={GOAL_STATUSES}
+                disabled={busy}
+              />
+            )}
+          />
         </div>
 
         <div>

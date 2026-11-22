@@ -1,22 +1,20 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import {
   habitFormValidator,
   type HabitFormValues,
 } from '@/app/(main)/habits/_validators/habit-form-validator';
+import { AppSelect } from '@/components/app-select';
 import { BottomSheet } from '@/components/bottom-sheet';
 import { HABIT_FREQUENCIES } from '@/constants/goals-habits';
 import { useCreateHabit, useUpdateHabit } from '@/hooks/apis/habits';
 import type { Habit } from '@/hooks/apis/habits/types';
 
 const fieldClass =
-  'h-11 w-full rounded-xl border border-line bg-background px-3 text-sm outline-none ring-primary focus:ring-2';
-
-const selectClass =
-  'h-11 w-full rounded-xl border border-line bg-background pl-3 pr-14 text-sm outline-none ring-primary focus:ring-2';
+  'h-11 w-full min-w-0 rounded-xl border border-line bg-background px-3 text-base outline-none ring-primary focus:ring-2';
 
 function getDefaultValues(habit?: Habit | null): HabitFormValues {
   if (!habit) {
@@ -91,21 +89,20 @@ export function HabitFormSheet({ open, habit = null, onClose }: HabitFormSheetPr
         </div>
 
         <div>
-          <label htmlFor='habit-frequency' className='mb-1 block text-sm font-medium'>
-            Frequency
-          </label>
-          <select
-            id='habit-frequency'
-            className={selectClass}
-            {...form.register('frequency')}
-            disabled={busy}
-          >
-            {HABIT_FREQUENCIES.map((frequency) => (
-              <option key={frequency.value} value={frequency.value}>
-                {frequency.label}
-              </option>
-            ))}
-          </select>
+          <span className='mb-1 block text-sm font-medium'>Frequency</span>
+          <Controller
+            control={form.control}
+            name='frequency'
+            render={({ field }) => (
+              <AppSelect
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                options={HABIT_FREQUENCIES}
+                disabled={busy}
+              />
+            )}
+          />
         </div>
 
         {isEditing ? (
